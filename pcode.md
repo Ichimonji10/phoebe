@@ -1,8 +1,8 @@
-
 pchapin's P-Code
-(C) Copyright 2003 by Peter Chapin
+================
+
+(C) Copyright 2003 by Peter Chapin  
 Last Revised: 2003-03-03
-==================================
 
 Introduction
 ------------
@@ -191,7 +191,6 @@ example
          END
      END
 
-
 Expressions
 -----------
 
@@ -250,7 +249,6 @@ used at the beginning of a loop to indicate that certain passes are to be skippe
        [process normal bytes]
      END
 
-
 Functions
 ---------
 
@@ -262,15 +260,15 @@ this p-code uses the word FUNCTION to describe any kind of callable block of cod
 the flexibility of p-code, there is no problem using p-code functions to describe procedures or
 methods in languages that support those concepts.
 
-FUNCTION [name of function] REQUIRES [precondition] (
-  [function parameter] DOMAIN [domain constraint description],
-  [another parameter],
-  [yet another parameter]
-  ) PROMISES [postcondition]
-  RETURNS [what it returns], [another] RANGE [range constraint description]
-  BEGIN
-    # Function Body
-  END
+    FUNCTION [name of function] REQUIRES [precondition] (
+        [function parameter] DOMAIN [domain constraint description],
+        [another parameter],
+        [yet another parameter]
+      ) PROMISES [postcondition]
+      RETURNS [what it returns], [another] RANGE [range constraint description]
+      BEGIN
+        # Function Body
+      END
 
 Many functions can only be invoked in a certain context. For example, a function may assume that
 a certain graphics package has been initialized, or that some global data is already in a
@@ -289,24 +287,24 @@ of the set of legal values the parameter or type may have. The syntax for domain
 types does not use the DOMAIN keyword since the term "domain" is more commonly associated with
 functions. However, the meaning of the constraints in both cases are similar.
 
-TYPE [day of the week] IS [some kind of enumeration] : [no weekends]
+    TYPE [day of the week] IS [some kind of enumeration] : [no weekends]
 
-FUNCTION [position the cursor] (
-  [row and column coordinates] DOMAIN [1..25 for row, 1..80 for column]
-  ) RETURNS VOID
+    FUNCTION [position the cursor] (
+        [row and column coordinates] DOMAIN [1..25 for row, 1..80 for column]
+      ) RETURNS VOID
 
 Many data structures have rules that always apply to them (sometimes called "invarients"). These
 rules can be expressed as domain constraints as well. For example,
 
-TYPE [list of file names] IS [list] OF [just strings] :
-  [new names always go on the end]
+    TYPE [list of file names] IS [list] OF [just strings] :
+      [new names always go on the end]
 
 The postcondition clause is where the function's side effects can be documented. This forms the
 "output" end of the function's context. For example
 
-FUNCTION [position the cursor] (
-  [row and column coordinates] DOMAIN [1..25 for row, 1..80 for column]
-  ) PROMISES [cursor moved to new position] RETURNS VOID
+    FUNCTION [position the cursor] (
+        [row and column coordinates] DOMAIN [1..25 for row, 1..80 for column]
+      ) PROMISES [cursor moved to new position] RETURNS VOID
 
 Even though the above function returns VOID data, it still performs a useful operation with a
 side effect. This side effect should be documented.
@@ -314,8 +312,8 @@ side effect. This side effect should be documented.
 The range of a function is the set of legal values of its output. This range may be constrained,
 and such constraints are to be documented here. For example,
 
-FUNCTION [generate a random die roll] (VOID)
-  RETURNS [an integer] RANGE [in the range 1..6]
+    FUNCTION [generate a random die roll] (VOID)
+      RETURNS [an integer] RANGE [in the range 1..6]
 
 The function body is where the function does the actual work. Here it manipulates its parameters
 and calculates its results. Also it is here where the function performs any side effects.
@@ -324,7 +322,6 @@ The body is written by using English phrases which describe specific actions, to
 control structures which describe how those actions are to be sequenced. Note also that it is
 acceptable in this p-code to nest function definitions and data definitions inside the body as
 well.
-
 
 Type Descriptions
 -----------------
@@ -337,12 +334,14 @@ thinking about a properly general design.
 
 Type descriptions take the form shown below.
 
-TYPE [name of type] IS [type descriptor]
+    TYPE [name of type] IS [type descriptor]
 
 where a type descriptor is something like:
 
      [simple description of type] : [domain constraint description]
+
 or
+
      [aggregate specifier] OF [type descriptor list] END
 
 where a type descriptor list is a comma separated list of type descriptors.
@@ -353,9 +352,9 @@ to handle abstract data types.
 
 Consider the following simple (ie non aggregate) type descriptions
 
-TYPE [user ID number] IS [some kind of integer] : [range 0 to whatever]
-TYPE [date] IS [stores calendar dates] : [only back to 1800]
-TYPE [pen color] IS [an enumeration]
+    TYPE [user ID number] IS [some kind of integer] : [range 0 to whatever]
+    TYPE [date] IS [stores calendar dates] : [only back to 1800]
+    TYPE [pen color] IS [an enumeration]
 
 Simple descriptions can be used to describe aggregates if you don't desire to spell out the
 detailed structure of an aggregate. Otherwise an aggregate specifier can be used.
@@ -363,18 +362,18 @@ detailed structure of an aggregate. Otherwise an aggregate specifier can be used
 Many types are really aggregates of simple types. The OF clause allows you to specify the nature
 of the aggregate. For example
 
-TYPE [list of filenames] IS [list] OF [just strings] END
+    TYPE [list of filenames] IS [list] OF [just strings] END
 
 Here is how you might specify a list of record (or structure) objects.
 
-TYPE [list of filenames] IS [list] OF
-  [a string for the name itself] : [can't hold path],
-  [size in bytes]                : [must be able to handle large files!],
-  [date and time of last modification]
-END
+    TYPE [list of filenames] IS [list] OF
+      [a string for the name itself] : [can't hold path],
+      [size in bytes]                : [must be able to handle large files!],
+      [date and time of last modification]
+    END
 
-TYPE [registers of calculator] IS [stack] OF [numbers] END
+    TYPE [registers of calculator] IS [stack] OF [numbers] END
 
-TYPE [error table] IS [record] OF ...
+    TYPE [error table] IS [record] OF ...
 
 Note that the END keyword is required if the OF keyword is used.

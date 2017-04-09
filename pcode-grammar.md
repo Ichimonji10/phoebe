@@ -1,0 +1,219 @@
+P-Code Grammar
+==============
+
+This file contains a summary of the p-code grammar. Uppercase symbols and characters enclosed in
+single quotation marks are tokens. lowercase symbols are non-terminals. The start symbol is the
+first non-terminal in this file. Note: This file is intended to be an easy to read reference.
+As usual, this grammar may or may not be suitable for building an implementation.
+
+    program:
+        declare_block function_list
+      | function_list
+      ;
+
+    declare_block:
+        DECLARE type_definition_list END
+      ;
+
+    type_definition_list:
+        type_definition_list type_definition
+      | type_definition
+      ;
+
+    type_definition:
+        TYPE EP IS type_descriptor
+      ;
+
+    type_descriptor:
+        EP
+      | EP ':' EP
+      | EP OF type_descriptor_list END
+      ;
+
+    type_descriptor_list:
+        type_descriptor_list ',' type_descriptor
+      | type_descriptor
+      ;
+
+    function_list:
+        function_list function
+      | function
+      | statement_list
+      ;
+
+    function:
+        FUNCTION function_header '(' param_list ')'
+          result_clause BEGIN statement_list END
+      ;
+
+    function_header:
+        EP
+      | EP REQUIRES EP
+      ;
+
+    param_list:
+        param_list ',' param
+      | param
+      ;
+
+    param:
+        EP
+      | EP DOMAIN EP
+      ;
+
+    result_clause:
+        RETURNS result_list
+      | PROMISES EP RETURNS result_list
+      ;
+
+    result_list:
+        result_list ',' result
+      | result
+      ;
+
+    result:
+        EP
+      | EP RANGE EP
+      | VOID
+      ;
+
+    statement_list:
+        statement_list statement
+      | statement
+      ;
+
+    statement:
+        EP
+      | BREAK
+      | CONTINUE
+      | RETURN
+      | IF conditional_expr THEN statement_list END
+      | IF conditional_expr THEN statement_list ELSE statement_list END
+      | FOR conditional_expr LOOP statement_list END
+      | FOREACH conditional_expr LOOP statement_list END
+      | WHILE conditional_expr LOOP statement_list END
+      | REPEAT statement_list UNTIL conditional_expr
+      | switch_statement
+      ;
+
+    switch_statement:
+        SWITCH EP case_list END
+      ;
+
+    case_list:
+        case_list case
+      | case
+      ;
+
+    case:
+        CASE EP ':' statement_list END
+      | DEFAULT ':' statement_list END
+      ;
+
+    conditional_expr:
+        conditional_expr OR and_expr
+      | and_expr
+      ;
+
+    and_expr:
+        and_expr AND simple_expr
+      | simple_expr
+      ;
+
+    simple_expr:
+        NOT simple_expr
+      | '(' conditional_expr ')'
+      | EP
+      ;
+
+The following grammar sub-set is supported by homework 3:
+
+    program:
+         function_list
+       ;
+
+    function_list:
+        statement_list
+      ;
+
+    statement_list:
+        statement_list statement
+      | statement
+      ;
+
+    statement:
+        EP
+      | RETURN
+      | IF conditional_expr THEN statement_list END
+      | IF conditional_expr THEN statement_list ELSE statement_list END
+      | WHILE conditional_expr LOOP statement_list END
+      | REPEAT statement_list UNTIL conditional_expr
+      ;
+
+    conditional_expr:
+        conditional_expr OR and_expr
+      | and_expr
+      ;
+
+    and_expr:
+        and_expr AND simple_expr
+      | simple_expr
+      ;
+
+    simple_expr:
+        NOT simple_expr
+      | '(' conditional_expr ')'
+      | EP
+      ;
+
+When re-written to avoid left recursion, the grammar sub-set becomes:
+
+    program:
+        function_list
+      ;
+
+    function_list:
+        statement_list
+      ;
+
+    statement_list:
+        statement statement_list_tail
+      ;
+
+    statement_list_tail:
+        statement statement_list_tail
+      | null
+      ;
+
+    statement:
+        EP
+      | RETURN
+      | IF conditional_expr THEN statement_list END
+      | IF conditional_expr THEN statement_list ELSE statement_list END
+      | WHILE conditional_expr LOOP statement_list END
+      | REPEAT statement_list UNTIL conditional_expr
+      ;
+
+    conditional_expr:
+        and_expr conditional_expr_tail
+      ;
+
+    conditional_expr_tail:
+        OR and_expr conditional_expr_tail
+      | null
+      ;
+
+    and_expr:
+        simple_expr and_expr_tail
+      ;
+
+    and_expr_tail:
+        AND simple_expr and_expr_tail
+      | null
+      ;
+
+    simple_expr:
+        NOT simple_expr
+      | '(' conditional_expr ')'
+      | EP
+      ;

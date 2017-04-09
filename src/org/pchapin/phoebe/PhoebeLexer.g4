@@ -49,6 +49,8 @@ TYPE     : 'TYPE';
 UNTIL    : 'UNTIL';
 VOID     : 'VOID';
 WHILE    : 'WHILE';
+LPAREN   : '(';
+RPAREN   : ')';
 
 
 IDENTIFIER
